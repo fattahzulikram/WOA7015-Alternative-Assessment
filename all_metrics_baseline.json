@@ -1,0 +1,12 @@
+{
+    "overall_accuracy": 0.001885014137606032,
+    "bleu_score": 0.005221424297261091,
+    "meteor_score": 0.011476103696727625,
+    "bert_score_f1": 0.875464916229248,
+    "type_specific": {
+        "unknown": {
+            "accuracy": 0.001885014137606032,
+            "count": 1061
+        }
+    }
+}
