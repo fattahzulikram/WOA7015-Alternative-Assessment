@@ -99,7 +99,7 @@ def print_all_metrics(metrics, model_name='baseline'):
         Prints all metrics
         
         :param metrics: The dictionary with the metrics. Expects classification (accuracy, macro_f1, weighted_f1), bleu (bleu1, bleu2, bleu3, bleu4), meteor (meteor), 
-        bertscore (bertscore_precision, bertscore_recall, bertscore_f1), exact_match (exact_match), by_type(ans_type (accuracy, f1, exact_match)) metrics.
+        rouge(rouge1, rouge2, rougeL), bertscore (bertscore_precision, bertscore_recall, bertscore_f1), exact_match (exact_match), by_type(ans_type (accuracy, f1, exact_match)) metrics.
         :param model_name: The baseline or the challenger
         """
         print(f"COMPREHENSIVE METRICS RESULTS FOR {model_name.upper()} MODEL")
@@ -122,6 +122,13 @@ def print_all_metrics(metrics, model_name='baseline'):
         print(f"  BLEU-2:             {bleu_metrics['bleu2']:.2f}%")
         print(f"  BLEU-3:             {bleu_metrics['bleu3']:.2f}%")
         print(f"  BLEU-4:             {bleu_metrics['bleu4']:.2f}%")
+
+        # ROUGE Scores
+        print("\nROUGE SCORES")
+        rouge_metrics = metrics['rouge']
+        print(f"  ROUGE-1:            {rouge_metrics['rouge1']:.2f}%")
+        print(f"  ROUGE-2:            {rouge_metrics['rouge2']:.2f}%")
+        print(f"  ROUGE-L:            {rouge_metrics['rougeL']:.2f}%")
         
         # METEOR
         print("\nMETEOR SCORE")
