@@ -1,0 +1,23 @@
+\section{Objective}
+
+This study will be conducted on the SLAKE dataset. The objective of this study is to conduct a comparative evaluation of the two 
+approaches to Med-VQA systems:
+
+\begin{itemize}
+    \item \textbf{The Baseline—Discriminative Model:} A CNN-LSTM hybrid model will be used as the baseline that will treat the VQA task 
+    as a classification task over a fixed vocabulary of answers.
+    \item \textbf{The Challenger—Generative Model:} BioMedBLIP, a state-of-the-art VLM that extends the BLIP architectures by integrating 
+    medical domain-specific knowledge within the model will be benchmarked against the baseline.
+\end{itemize}
+
+Through this study, it is expected that the following research questions will be addressed.
+
+\textbf{RQ1.} How do discriminative models compare to pre-trained vision-language models in terms of overall accuracy and 
+answer quality on medical VQA tasks on the SLAKE dataset?
+
+\textbf{RQ2.} What are the strengths and weaknesses of the two VQA approaches across different question types (closed-ended vs.~open-ended)?
+
+\textbf{RQ3.} How do the models perform on different performance metrics, including accuracy, semantic similarity (F1, BLEU, METEOR, 
+ROUGE), and contextual understanding (BERTScore)?
+
+\textbf{RQ4.} In medical settings, what are the trade-offs between these two approaches in terms of performance, complexity, and resources?

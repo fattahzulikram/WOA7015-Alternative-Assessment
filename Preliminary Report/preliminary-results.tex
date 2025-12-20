@@ -1,0 +1,117 @@
+\section{Preliminary Results}
+
+This section presents the preliminary results obtained from training and evaluating the baseline CNN-LSTM model on the SLAKE dataset.
+
+\subsection{Model Training}
+
+The training of the model converged at epoch 44. After that, the early stop was triggered on epoch 59. The training and validation loss, 
+training and validation accuracy, and learning rates alongside the best epoch with the highest validation accuracy are presented in 
+figure~\ref{fig:training_curves}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{training_curves.png}
+    \caption{Model Training Curves}
+    \label{fig:training_curves}
+\end{figure}
+
+\subsection{Model Evaluation}
+
+After training, the model was evaluated on the test set, and the selected metrics were computed.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric} & \textbf{Value} \\ \hline
+Accuracy        & 81.53\%        \\ \hline
+Exact Match     & 81.53\%        \\ \hline
+\end{tabular}
+\caption{Accuracy Metrics}
+\label{tab:acc_metrics}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric}   & \textbf{Value} \\ \hline
+Macro F1 Score    & 54.53\%        \\ \hline
+Weighted F1 Score & 81.46\%        \\ \hline
+\end{tabular}
+\caption{F1 Scores}
+\label{tab:f1_scores}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Question Type}  & \textbf{Metric} & \textbf{Value} \\ \hline
+\multirow{3}{*}{Closed}   & Accuracy        & 83.65\%        \\ \cline{2-3} 
+                        & F1 Score        & 64.75\%        \\ \cline{2-3} 
+                        & Exact Match     & 83.65\%        \\ \hline
+\multirow{3}{*}{Open} & Accuracy        & 80.16\%        \\ \cline{2-3} 
+                        & F1 Score        & 53.98\%        \\ \cline{2-3} 
+                        & Exact Match     & 80.16\%        \\ \hline
+\end{tabular}
+\caption{Metrics Per Answer Types}
+\label{tab:per-answer}
+\end{table}
+
+Looking at table~\ref{tab:acc_metrics}, it can be seen that the model achieved 81.53\% accuracy on the overall test dataset. It also 
+achieved 83.65\% accuracy on closed and 80.16\% accuracy on open answer types, as seen in table~\ref{tab:per-answer}. From the 
+performances presented in the study of~\cite{compare_metrics}, it can be seen that the baseline model has achieved close to SOTA 
+performances in all of these metrics. The answer-type-specific metrics are visualized in figure~\ref{fig:ans-type-spef}.
+
+From table~\ref{tab:f1_scores}, it can be seen that there is a 26.93\% gap between the 
+weighted and the macro F1 scores. This indicates that there is a class imbalance in the dataset. The low macro F1 score suggests that 
+the model performs well on common answer classes but struggles with rare answer classes. From the answer-type-specific F1 scores, it 
+can be determined that open-ended questions have more rare answer classes.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{type_specific_comparison_baseline.png}
+    \caption{Answer Type Specific Metrics}
+    \label{fig:ans-type-spef}
+\end{figure}
+
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric}     & \textbf{Value} \\ \hline
+BLEU-1              & 83.79\%        \\ \hline
+BLEU-2              & 35.82\%        \\ \hline
+BLEU-3              & 24.57\%        \\ \hline
+BLEU-4              & 19.23\%        \\ \hline
+ROUGE-1             & 84.42\%        \\ \hline
+ROUGE-2             & 15.89\%        \\ \hline
+ROUGE-L             & 84.08\%        \\ \hline
+METEOR              & 48.56\%        \\ \hline
+BERTScore Precision & 96.74\%        \\ \hline
+BERTScore Recall    & 96.75\%        \\ \hline
+BERTScore F1        & 96.74\%        \\ \hline
+\end{tabular}
+\caption{Generative Metrics}
+\label{tab:generative_scores}
+\end{table}
+
+From the generative metrics presented in table~\ref{tab:generative_scores}, it can be seen that the model has a BLEU-1 score of 83.79\%, 
+which drops drastically for BLEU-2, BLEU-3, and BLEU-4. The drop of the score is visualized in figure~\ref{fig:bleu_scores}. The 
+reason for this drop is because medical VQA answers are typically 1-2 words (e.g., `yes', `liver', `ct scan'), making higher-order overlaps  
+less common, resulting in lower BLEU-2/3/4 scores. For the same reason, it can be noticed that although the ROUGE-1 score is 84.42\%, the ROUGE-2 
+score plummeted down to 15.89\%. Finally, the model achieved a high BERTScore of 96.74\%. This indicated that the model gives answers 
+that are semantically very close to the ground truth answers.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{ngram_analysis_baseline.png}
+    \caption{BLEU Scores}
+    \label{fig:bleu_scores}
+\end{figure}
+
+Overall, the classification baseline achieves 81.53\% accuracy with exceptional semantic understanding (96.74\% BERTScore). The model 
+excels at closed-ended questions (83.65\%) and common medical terms, with performance consistent across metrics (81.53\% exact match = 
+accuracy).

@@ -1,0 +1,206 @@
+\section{Method}
+
+\subsection{Dataset Description}
+SLAKE (Semantic Label for Anatomical Knowledge Evaluation)—a publicly avaliable, manually annotated dataset published 
+by~\cite{WOS:000786144100348}—is a benchmark dataset that is specifically designed for evaluating VQA systems on medical images.~It is a bilingual dataset consisting 
+of both English and Chinese question-answer pairs.~The dataset comprises 642 medical images of three modalities—CT, MRI, and
+X-ray.~These images cover a wide range of anatomical features.
+
+The dataset has 14,028 question-answer pairs in total.~Among them, 7,033 pairs are in English, which is the focus of this study.~These 
+pairs are categorized into open-ended (4,252) and closed-ended (2,781) depending on the answer type.~The closed-ended questions primarily 
+consist of one-word responses with most of them being yes/no answers, with a very few two-word responses.~The open-ended questions, 
+on the other hand, consist of more diverse free-form answers, where some of them even surpass 10 words.~Most of the questions are based 
+on organs, positions, abnormalities, and modalities.
+
+The entire dataset is split into training (70\%), validation (15\%), and testing (15\%).
+
+\subsection{Data Preparation and Preprocessing}
+There is data in two modalities—images and texts.~The text data consists of questions and answers.~All of them are prepared differently.
+
+\subsubsection{Image Processing}
+To ensure that consistent input goes to the model, the following preprocessing steps were done.
+
+\begin{itemize}
+    \item \textbf{Image Resizing:} All the images were resized to 224*224 pixels, as this is the standard input size for the CNN base in 
+    the hybrid model.~This resolution is consistent with the input size of the standard ImageNet-pretrained models.
+    \item  \textbf{Normalization:} The pixel values were normalized using the ImageNet statistics of [0.485, 0.456, 0.406] as the mean and 
+    [0.229, 0.224, 0.225] as the standard deviation.~For the generative model—BioMedBLIP—this will be changed according to the protocol 
+    mentioned there.
+    \item \textbf{Grayscale Handling:} As many of the images of the dataset are in grayscale, specifically the X-ray images, the images 
+    are converted into 3-channel RGB images for consistency.
+\end{itemize}
+
+\subsubsection{Question Preprocessing}
+The questions are in natural language and contain medical terms as well as filler terms.~They were processed in the following steps.
+
+\begin{itemize}
+    \item \textbf{Tokenization:} The questions were tokenized to the word level using the `nltk' module in Python.~This effectively converted 
+    the questions into sequences of tokens.
+    \item  \textbf{Vocabulary Construction:} For fair evaluation of the model, only the training dataset was used to construct the 
+    vocabulary list.~The list included every word that appeared.~Appropriate mappings were also created for encoding and decoding 
+    vocabularies to and from the tokens.~Approximately around 300 vocabularies were available in the list.~Special tokens were 
+    used for padding and to represent unknown values.
+    \item  \textbf{Lowercasing:} All the text from the questions was converted into lowercase, which resulted in a smaller vocabulary 
+    list but with better generalization.
+    \item \textbf{Padding:} In every batch, the question sequences were padded to the max question length of that specific batch.~The 
+    special padding token was used for this purpose.
+\end{itemize}
+
+\subsubsection{Answer Preprocessing}
+Unlike the questions preprocessing, the answers were not tokenized to the word level.~The steps involving answer preprocessing were the 
+following.
+
+\begin{itemize}
+    \item \textbf{Answer Vocabulary Construction:} All the unique answers were extracted from the training dataset.~This resulted in a 
+    vocabulary list of approximately 225 unique answers.
+    \item \textbf{Answer Numericalization:} All the answers were mapped to a unique number.~This mapping was then used for classification 
+    task, making the model a discriminative model.
+    \item  \textbf{Handling Multi-word Answers:} Answers containing multiple words are considered a single unit.~Thus, each multi-word 
+    answer got mapped to a unique number.
+\end{itemize}
+
+\subsection{Model Architectures}
+
+\subsubsection{The Baseline: CNN-LSTM}
+
+The baseline model used in this study is a discriminative model that focuses on classification task.~It has three major components.
+
+\vspace{\baselineskip}
+
+\noindent\textbf{Visual Encoder}
+
+The model uses a ResNet-34 architecture pre-trained on the ImageNet dataset as the visual encoder. This is chosen over deeper variants, 
+like ResNet-50 or ResNet-101, to balance the capacity of the model with its computational efficiency. It also reduces the risk of 
+overfitting on the relatively small SLAKE dataset. The final fully connected layer is removed from the model to modify it according to 
+the specific classification problem of the study. The RGB images of 3*224*224 dimension are used as the input to this model. The 
+extracted features from the final convolution layer (7*7*512) are then squeezed into a 512-dimensional feature vector.
+
+\vspace{\baselineskip}
+
+\noindent\textbf{Question Encoder}
+
+For the processing of questions, a bidirectional LSTM is employed with a self-attention mechanism. The tokenized questions are passed to 
+the encoder. The tokens are then mapped to a 512-dimensional word embedding. The embedding dimension is obtained through the 
+hyperparameter tuning stage of the model. The embedded sequences are then processed by a bidirectional LSTM with 512 hidden units in 
+each direction. So, a total of 1024 hidden units are present. A bidirectional LSTM is chosen because it allows the model to understand 
+the medical terminologies better through past and future tokens. This helps the model with understanding complex medical terminologies 
+better. Additionally, to increase the focus on important words in the questions, a self-attention mechanism is integrated into the 
+hidden states. Finally, the question encoder produces a 1024-dimensional feature vector after applying a mean pooling on the resulting 
+output.
+
+\vspace{\baselineskip}
+
+\noindent\textbf{Multimodal Fusion and Classification}
+
+The visual features (512-dimensional) and the question features (1024-dimensional) are concatenated to create a multimodal representation 
+of 1536 dimensions.~This concatenated feature then passes through a series of fully connected layers with dropout regularization.~The 
+fusion dimension and fusion dropout values are obtained through hyperparameter tuning.
+
+\begin{itemize}
+    \item FC1: $1536 \to~1024$, Batch Normalization, ReLU, Dropout (0.27)
+    \item FC2: $1024 \to~512$, Batch Normalization, ReLU, Dropout (0.27)
+\end{itemize}
+
+Finally, a fully connected layer is used to project the 512-dimensional features to the answer vocabulary space.~The answer to a question 
+can be obtained through using a softmax function on the output logits.
+
+\vspace{\baselineskip}
+
+\noindent\textbf{Hyperparameter Tuning and Training}
+
+The library `Optuna' is used in this study to optimize the hyperparameters of the model.~A 50-trial optimization is conducted in the 
+hyperparameters space with 30 training epochs, a step learning rate scheduler, and early stopping.~The best-performing model has the 
+following hyperparameters.
+
+\begin{itemize}
+    \item Embedding dimension: 512
+    \item LSTM hidden layers: 512
+    \item Total LSTM layers: 2
+    \item LSTM dropout: 0.18
+    \item LSTM pooling strategy: Mean pooling
+    \item Attention heads for self-attention: 4
+    \item Fusion dimension: 1024
+    \item Fusion dropout: 0.27
+    \item Batch size: 16
+    \item Learning rate: $7.56e-05$
+    \item Weight decay: $4.62e-06$
+    \item Scheduler step size: 15
+    \item Scheduler gamma: 0.69
+\end{itemize}
+
+The final model is trained on the Adam optimizer with the tuned learning rate and weight decay.~A step learning rate scheduler is also used 
+using the obtained step size and gamma.~Gradient clipping (max norm = 5.0) is applied to prevent exploding gradients.~The model is set to 
+train for 100 epochs with early stopping based on validation accuracy and 15 epoch patience.
+
+\vspace{\baselineskip}
+
+\noindent\textbf{Justification for Baseline Selection}
+
+The CNN-biLSTM architecture was selected for several factors found through prior literature.
+
+\begin{itemize}
+    \item \textbf{CNN-LSTM architecture:} This architecture has been studied a lot in the VQA field. It is also relevant in medical 
+    VQA research.~\autocite{Lin_2023}
+    \item \textbf{ResNet-34:} ResNet models have performed outstandingly in medical image analysis tasks, with ResNet-34 being utilized 
+    in multiple research studies within this field due to its optimal balance of depth and efficiency.~\autocite{LI2022104183, gong2021crossmodalselfattentionmultitaskpretraining}
+    \item \textbf{Bidirectional LSTM:} TAs contexts from both directions are important for medical terminologies, bidirectional LSTM can 
+    understand medical questions better than the vanilla LSTM. Bi-LSTM has also been used in studies and achieved success similar to 
+    contemporary VQA models.~\autocite{9121068}
+    \item \textbf{Self-attention:} Multiple VQA benchmarks have proven the effectiveness of self-attention, as it allows models to focus 
+    on question keywords relevant to the input image.~\autocite{CHEN2023105049}
+\end{itemize}
+
+\subsubsection{The Challenger: BioMedBLIP}
+
+BioMedBLIP is a model created for medical image analysis, particularly in the context of visual question answering and image 
+captioning.~\autocite{biomedblip} This model extends on the BLIP (Bootstrapping Language-Image Pre-training) architecture, which is a VLM 
+that is used for unified vision-language tasks, such as VQA.~BioMedBLIP extends on this architecture by integrating domain-specific 
+medical knowledge into the BLIP model.~This allows BioMedBLIP to work as an excellent choice for medical—related visual-language tasks. For 
+this study, this model will be fine-tuned on the SLAKE dataset.~It will then be benchmarked against the baseline on different performance
+metrics.
+
+\vspace{\baselineskip}
+
+\noindent\textbf{Justification for BioMedBLIP Selection}
+
+BioMedBLIP is selected as the advanced model for this study for the following factors.
+
+\begin{itemize}
+    \item \textbf{Domain Specificity:} Unlike BLIP or CLIP, BioMedBLIP is pre-trained on medical datasets. The domain-specific knowledge 
+    lets it outperform general models for the medical domain.
+    \item \textbf{Generative Capability:} Unlike the baseline model, BioMedBLIP can generate free-form answers.~Thus, it can handle 
+    novel question types that were not seen during training.~In the case of the baseline, the model can only classify answers that it 
+    learns from the training dataset.
+    \item \textbf{State-of-the-Art Performance:} BioMedBLIP achieved state-of-the-art (SOTA) performance in 15 of the 20 dataset-task combinations
+    it was evaluated on.~\autocite{biomedblip} This makes this model an excellent choice for comparison.
+    \item \textbf{Minimal Modification:} As this model is specifically tailored for tasks like VQA, the model requires minimal modification 
+    for this study beyond fine-tuning.
+\end{itemize}
+
+\subsection{Evaluation Metrics}
+
+To ensure a fair evaluation, both classification and generative metrics will be employed.
+
+\begin{itemize}
+    \item \textbf{Accuracy Metrics}
+    \begin{itemize}
+        \item \textbf{Accuracy:} Measures overall correctness by comparing predicted and ground truth answers.
+        \item \textbf{Exact Match:} Binary metric indicating a perfect string match.
+    \end{itemize}
+    \item \textbf{F1-Based Metrics}
+    \begin{itemize}
+        \item \textbf{Macro F1 Score:} Treats all answer classes equally.
+        \item \textbf{Weighted F1 Score:} Accounts for class imbalance by using class weights.
+    \end{itemize}
+    \item \textbf{Generative Metrics}
+    \begin{itemize}
+        \item \textbf{BLEU:} It is a standard for NLP tasks.~For this assignment, up to 4-grams will be tested.~In a study,~\cite{Lin_2023} noted 
+        that BLEU is not suitable for med-VQA, but they still employed it in their study, as it is used in medical report generation tasks.
+        \item \textbf{Rouge:} Assesses how much of the reference text appears in the generated output.~This metric is used in studies to 
+        evaluate recall.~\autocite{xin2025med3dvlmefficientvisionlanguagemodel}
+        \item \textbf{Meteor:} It improves upon BLEU and ROUGE by considering synonyms and stemming, balancing precision and recall.~\autocite{xin2025med3dvlmefficientvisionlanguagemodel}
+        \item \textbf{BERTScore} It utilizes contextual embeddings from BERT to compute semantic similarity between text pairs.~There are several 
+        studies that use this metric for evaluating vision-language tasks.~\autocite{Woundcarevqa}
+    \end{itemize}
+    \item \textbf{Per-Answer-Type Metrics:} Accuracy, Exact Match, and F1 Score will be computed for open- and closed-ended answer types.
+\end{itemize}

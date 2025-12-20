@@ -1,0 +1,19 @@
+{
+  "best_params": {
+    "embed_dim": 512,
+    "lstm_hidden": 512,
+    "lstm_num_layers": 2,
+    "lstm_dropout": 0.18002692399577636,
+    "pooling_strategy": "mean",
+    "attention_heads": 4,
+    "fusion_dim": 1024,
+    "fusion_dropout": 0.26747884120423054,
+    "batch_size": 16,
+    "learning_rate": 7.560676161561469e-05,
+    "weight_decay": 4.62137155906234e-06,
+    "scheduler_step_size": 15,
+    "scheduler_gamma": 0.6862778301767893
+  },
+  "best_value": 81.76638176638177,
+  "best_trial": 11
+}

@@ -6,6 +6,9 @@
 data/dataset
 data/imgs
 
+# Models
+data/final_model/*.pth
+
 # Latex auxiliary files
 Preliminary Report/*
 !Preliminary Report/*.tex

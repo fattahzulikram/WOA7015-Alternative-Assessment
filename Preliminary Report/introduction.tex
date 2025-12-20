@@ -1,0 +1,26 @@
+\section{Introduction}
+
+\textbf{Medical Visual Question Answering (Med-VQA)} combines medical artificial intelligence with visual question answering, where a
+system predicts plausible answers to clinically relevant questions in natural language given medical images. Unlike general VQA systems,
+Med-VQA is considered more challenging for different factors, including the difficulty in creating large datasets with manually 
+annotated question-answer pairs, the need for sophisticated models that can focus on fine-grained details of medical images, and the 
+necessity to train a model with medical contexts to properly correlate the questions to the images.~\autocite{Lin_2023} Although the 
+research of Med-VQA is still relatively new \autocite{WOS:000786144100348}, there are some publicly available datasets that 
+are well-annotated for training, validating, and testing Med-VQA systems, including VQA-RAD \autocite{vqarad}, PathVQA \autocite{pathvqa}, 
+and SLAKE \autocite{WOS:000786144100348}.
+
+Traditionally, research on Med-VQA employed discriminative models that focused on image recognition and classification where models were 
+trained to identify specific features within medical images. These architectures commonly utilize CNNs as image encoders
+and RNN/LSTM as the text encoder.~\autocite{bioengineering10030380} However, these systems typically relied on predefined categories, and
+while they were effective in closed—set scenarios, they lacked the ability to answer complex, natural language questions that could 
+guide clinical decision-making.~\autocite{BENCHAABANE2025200545}
+
+With the recent advances in \textbf{Vision-Language Models (VLM)}, the dynamic has shifted towards fine-tuning powerful foundational 
+models that are pre-trained with large-scale databases of image-text pairs. Models such as BERT, CLIP, BLIP, LLaVA, and others have achieved 
+remarkable results on different VQA datasets. For specific domains, domain-specific knowledge is injected within the models, resulting 
+in domain-specific models like BioMedBLIP~\autocite{biomedblip}, BioMedCLIP~\autocite{zhang2025biomedclipmultimodalbiomedicalfoundation}, 
+and so on. 
+
+With all these advances, it becomes a necessity to benchmark them to understand the trade-offs between traditional, discriminative 
+models versus modern, pre-trained vision language models. These comparisons can help identify the future direction that can be taken to 
+advance medical VQA systems further.

@@ -1,0 +1,55 @@
+\documentclass[hidelinks, 12pt]{article}
+\usepackage[english]{babel}
+\usepackage{xcolor}
+\usepackage{titlesec} % For title formatting
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{multirow}
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage[style=apa, backend=biber]{biblatex}
+
+\addbibresource{ref.bib}
+\definecolor{customtitlecolor}{RGB}{4, 46, 96}
+
+% --- Define Custom Header Styles ---
+
+% 1. Custom SECTION Header
+\titleformat{\section}
+  {\normalfont\color{customtitlecolor}\LARGE\bfseries} % Text format: Blue, Huge, Bold
+  {\thesection}                           % Label/Number: Standard section number
+  {1em}                                   % Separation: 1em space
+  {}                                      % Code before the title text
+
+% 2. Custom SUBSECTION Header
+\titleformat{\subsection}
+  {\normalfont\color{customtitlecolor}\large\bfseries}  % Text format: Red, Large, Italic
+  {\thesubsection}                        % Label/Number: Standard subsection number
+  {0.5em}                                 % Separation: 0.5em space
+  {} 
+
+\titleformat{\subsubsection}
+  {\normalfont\color{customtitlecolor}\normalsize\bfseries}  % Text format: Red, Large, Italic
+  {\thesubsubsection}                        % Label/Number: Standard subsection number
+  {0.5em}                                 % Separation: 0.5em space
+  {} 
+
+\newcolumntype{M}[1]{>{\hspace{0pt}}m{#1}}
+
+\begin{document}
+\input{title.tex}
+
+\clearpage
+
+\input{introduction.tex}
+\input{objective.tex}
+\input{method.tex}
+\input{preliminary-results.tex}
+\input{conclusion-next-step.tex}
+
+\clearpage
+\printbibliography[heading=bibintoc,title={References}]
+
+\end{document}
