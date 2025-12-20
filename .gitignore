@@ -1,1 +1,15 @@
-data/*
+# Metadata and cache
+*_MACOSX
+*__pycache__
+
+# Datasets
+data/dataset
+data/imgs
+
+# Latex auxiliary files
+Preliminary Report/*
+!Preliminary Report/*.tex
+!Preliminary Report/*.pdf
+
+# Preliminary submission files
+Preliminary Submission
