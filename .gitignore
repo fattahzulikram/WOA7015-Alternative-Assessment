@@ -8,6 +8,7 @@ data/imgs
 
 # Models
 data/final_model/*.pth
+data/final_model_BioMedBLIP/best_lora_model_epoch_*/*
 
 # Latex auxiliary files
 Preliminary Report/*
