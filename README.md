@@ -171,8 +171,8 @@ python -m pip install -r requirements.txt
 - **Exact Match**: Achieves 75.54% test set exact match accuracy, which falls short of the baseline.
 - **Semantic Understanding**: The high BERTScore (97%) indicates semantically correct answers even though the answers may not match with the dataset answers.
 - **Struggle with Spatial Reasonings**: The model struggled with spatial reasoning (left vs right, upper vs lower).
-- **Open-Ended Answer Issues**: Had cases where the order of the answers were not the same as the dataset, or missed punctuations, or generated ``x - ray'' where  the dataset
-says ``x-ray''.
+- **Open-Ended Answer Issues**: Had cases where the order of the answers were not the same as the dataset, or missed punctuations, or generated 'x - ray' where the 
+ground-truth answer is 'x-ray'.
 
 ## Requirements
 
