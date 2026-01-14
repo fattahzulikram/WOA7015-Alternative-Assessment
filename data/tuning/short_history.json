@@ -1,0 +1,79 @@
+{
+    "best_config": {
+        "r": 32,
+        "alpha": 64,
+        "lr": 0.0001,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "name": "high_rank_fast_learning"
+    },
+    "best_score": 84.33,
+    "all_results": [
+        {
+            "config": {
+                "r": 8,
+                "alpha": 16,
+                "lr": 5e-05,
+                "batch_size": 4,
+                "grad_accum": 8,
+                "name": "conservative"
+            },
+            "exact_match": 80.06
+        },
+        {
+            "config": {
+                "r": 16,
+                "alpha": 32,
+                "lr": 5e-05,
+                "batch_size": 4,
+                "grad_accum": 8,
+                "name": "balanced"
+            },
+            "exact_match": 81.48
+        },
+        {
+            "config": {
+                "r": 32,
+                "alpha": 64,
+                "lr": 3e-05,
+                "batch_size": 4,
+                "grad_accum": 8,
+                "name": "high_capacity"
+            },
+            "exact_match": 81.39
+        },
+        {
+            "config": {
+                "r": 16,
+                "alpha": 32,
+                "lr": 5e-05,
+                "batch_size": 8,
+                "grad_accum": 4,
+                "name": "balanced_with_bigger_batch"
+            },
+            "exact_match": 79.54
+        },
+        {
+            "config": {
+                "r": 16,
+                "alpha": 32,
+                "lr": 0.0001,
+                "batch_size": 8,
+                "grad_accum": 4,
+                "name": "fast_learning"
+            },
+            "exact_match": 81.77
+        },
+        {
+            "config": {
+                "r": 32,
+                "alpha": 64,
+                "lr": 0.0001,
+                "batch_size": 8,
+                "grad_accum": 4,
+                "name": "high_rank_fast_learning"
+            },
+            "exact_match": 84.33
+        }
+    ]
+}
