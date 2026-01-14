@@ -26,6 +26,11 @@ encoder.
 - The implementation of the CNN-biLSTM baseline
 - Hyperparameter tuning for the baseline
 - Evaluation with different classification and generative metrics alongside per-answer-type metrics
+- Loading BioMedBLIP model from huggingface checkpoint
+- Zero-shot evaluation of the model
+- LoRA adaptation and hyperparameter tuning for BioMedBLIP
+- Final finetune and evaluation of the best performing model
+- Error analysis for the models
 
 ## Dataset
 
@@ -76,13 +81,13 @@ Or download the full dataset manually from [HuggingFace SLAKE](https://huggingfa
 **Key Features:**
 - Pre-trained on large-scale biomedical data
 - Generative approach with free-form text output
-- State-of-the-art performance
 
 ## Installation and Usage
 
 ### Prerequisites
 - Python (3.14 used in this project)
-- CUDA-capable GPU (recommended)
+- CUDA-capable GPU for baseline (recommended)
+- High-end GPU for BioMedBLIP (necessary)
 - At lease 16GB RAM
 
 ### Setup
@@ -106,6 +111,8 @@ python -m pip install -r requirements.txt
 
 4. Open and run **baseline_final.ipynb** for the baseline model.
 
+5. Open and run **biomedblip-slake.ipynb** for the final model.
+
 ## Results
 
 ### Overall Performance
@@ -115,26 +122,26 @@ python -m pip install -r requirements.txt
 | Model | Overall Acc | Exact Match |
 |-------|-------------|-------------|
 | **CNN-LSTM** | 81.53% | 81.53% |
-| **BioMedBLIP** | TBD | TBD |
+| **BioMedBLIP** | 75.54% | 75.54% |
 
 #### F1 Scores
 
 | Model | Macro F1 | Weighted F1 |
 |-------|----------|-------------|
 | **CNN-LSTM** | 54.53% | 81.46% |
-| **BioMedBLIP** | TBD | TBD |
+| **BioMedBLIP** | 36.24% | 74.66% |
 
 #### Generative Metrics
 
 | Model | BLEU-1 | BLEU-2 | BLEU-3 | BLEU-4 | ROUGE-1 | ROUGE-2 | ROUGE-L | METEOR |
 |-------|--------|--------|--------|--------|---------|---------|---------|--------|
 | **CNN-LSTM** | 83.79% | 35.82% | 24.57% | 19.23% | 84.42% | 15.89% | 84.08% | 48.56% |
-| **BioMedBLIP** | TBD | TBD | TBD | TBD | TBD | TBD | TBD | TBD | 
+| **BioMedBLIP** | 79.74% | 32.23% | 21.99% | 17.62% | 82.01% | 12.14% | 81.67% | 44.75% | 
 
 | Model | BERTScore Precision | BERTScore Recall | BERTScore F1 |
 |-------|---------------------|------------------|--------------|
 | **CNN-LSTM** | 96.74% | 96.75% | 96.74% |
-| **BioMedBLIP** | TBD | TBD | TBD |
+| **BioMedBLIP** | 97.08% | 96.94% | 97.00% |
 
 ### Performance by Question Type
 
@@ -142,13 +149,13 @@ python -m pip install -r requirements.txt
 | Model | Accuracy | F1 Score | Exact Match |
 |-------|----------|----------|-------------|
 | **CNN-LSTM** | 80.16% | 53.98% | 80.16% |
-| **BioMedBLIP** | TBD | TBD | TBD |
+| **BioMedBLIP** | 69.53% | 34.06% | 69.53% |
 
 #### Closed-Ended Questions
 | Model | Accuracy | F1 Score | Exact Match |
 |-------|----------|----------|-------------|
 | **CNN-LSTM** | 83.65% | 64.75% | 83.65% |
-| **BioMedBLIP** | TBD | TBD | TBD |
+| **BioMedBLIP** | 84.86% | 69.30% | 84.85% |
 
 ### Key Findings
 
@@ -156,8 +163,16 @@ python -m pip install -r requirements.txt
 
 - **Accuracy**: Achieves 81.53% overall accuracy with solid performance on both open-ended and closed-ended questions.
 - **Class Imbalance**: Almost 27% gap between weighted and macro F1 scores. The model struggles on rare answer types.
-- **Generative Metrics**: Solid BERT-1 and ROUGE-1 scores, which drop down for higher orders. This is expected as most of the answers are short.
+- **Generative Metrics**: Solid BLEU-1 and ROUGE-1 scores, which drop down for higher orders. This is expected as most of the answers are short.
 - **Semantic Understanding**: An outstanding BERTScore (96.75%) indicates good semantic alignment.
+
+#### BioMedBLIP
+
+- **Exact Match**: Achieves 75.54% test set exact match accuracy, which falls short of the baseline.
+- **Semantic Understanding**: The high BERTScore (97%) indicates semantically correct answers even though the answers may not match with the dataset answers.
+- **Struggle with Spatial Reasonings**: The model struggled with spatial reasoning (left vs right, upper vs lower).
+- **Open-Ended Answer Issues**: Had cases where the order of the answers were not the same as the dataset, or missed punctuations, or generated ``x - ray'' where  the dataset
+says ``x-ray''.
 
 ## Requirements
 
